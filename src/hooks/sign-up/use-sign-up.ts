@@ -38,6 +38,7 @@ export const useSignUpForm = () => {
 			await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
 
 			onNext((prev) => prev + 1)
+      alert("running")
 		} catch (error: any) {
 			toast({
 				title: 'Error',
