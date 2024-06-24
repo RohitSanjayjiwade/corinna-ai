@@ -5,7 +5,9 @@ import { Loader } from '../loader'
 type Props = {}
 
 const BreadCrumb = (props: Props) => {
+
   
+
   return (
     <div className="flex flex-col ">
       <div className="flex gap-5 items-center">
