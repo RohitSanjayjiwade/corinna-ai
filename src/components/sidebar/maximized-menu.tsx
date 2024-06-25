@@ -3,6 +3,7 @@ import { LogOut, Menu, MonitorSmartphone } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import DomainMenu from './domain-menu'
+import MenuItem from './menu-item'
 
 type Props = {
   onExpand(): void
@@ -43,18 +44,18 @@ const MaxMenu = ({ current, domains, onExpand, onSignOut }: Props) => {
         <div className="flex flex-col">
           <p className="text-xs text-gray-500 mb-3">MENU</p>
           {SIDE_BAR_MENU.map((menu, key) => (
-            // <MenuItem
-            //   size="max"
-            //   {...menu}
-            //   key={key}
-            //   current={current}
-            // />
+            <MenuItem
+              size="max"
+              {...menu}
+              key={key}
+              current={current}
+            />
           ))}
           <DomainMenu domains={domains} />
         </div>
         <div className="flex flex-col">
           <p className="text-xs text-gray-500 mb-3">OPTIONS</p>
-          {/*<MenuItem
+          <MenuItem
             size="max"
             label="Sign out"
             icon={<LogOut />}
@@ -64,7 +65,7 @@ const MaxMenu = ({ current, domains, onExpand, onSignOut }: Props) => {
             size="max"
             label="Mobile App"
             icon={<MonitorSmartphone />}
-          />*/}
+          />
         </div>
       </div>
     </div>

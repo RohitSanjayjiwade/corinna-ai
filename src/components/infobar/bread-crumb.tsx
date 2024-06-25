@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
-import { Loader } from '../loader'
 
 type Props = {}
 
 const BreadCrumb = (props: Props) => {
 
-  
+  //WIP:Set up use side bar hook for real time chat and chat bot stuff
+  //WIP:setup the description and the switch
 
   return (
     <div className="flex flex-col ">
