@@ -1,3 +1,4 @@
+import { onUpdatePassword } from '@/actions/settings'
 import { useToast } from '@/components/ui/use-toast'
 import { ChangePasswordProps, ChangePasswordSchema } from '@/schemas/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
