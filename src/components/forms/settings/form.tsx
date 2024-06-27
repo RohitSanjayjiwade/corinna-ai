@@ -3,6 +3,7 @@ import { Separator } from '@/components/ui/separator'
 import { useSettings } from '@/hooks/settings/use-settings'
 import React from 'react'
 import { DomainUpdate } from './domain-update'
+import CodeSnippet from './code-snippet'
 
 type Props = {
   id: string
@@ -37,7 +38,7 @@ const SettingsForm = ({ id, name, chatBot, plan }: Props) => {
           register={register}
           errors={errors}
         />
-        
+        <CodeSnippet id={id} />
       </div>
     </form>
   )
