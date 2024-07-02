@@ -8,6 +8,8 @@ import PremiumBadge from '@/icons/premium-badge'
 import EditChatbotIcon from './edit-chatbot-icon'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Loader } from '@/components/loader'
 
 
 const WelcomeMessage = dynamic(
@@ -84,6 +86,22 @@ const SettingsForm = ({ id, name, chatBot, plan }: Props) => {
               />
           </div>
         </div>
+      </div>
+      <div className="flex gap-5 justify-end">
+        <Button
+          onClick={onDeleteDomain}
+          variant="destructive"
+          type="button"
+          className="px-10 h-[50px]"
+        >
+          <Loader loading={deleting}>Delete Domain</Loader>
+        </Button>
+        <Button
+          type="submit"
+          className="w-[100px] h-[50px]"
+        >
+          <Loader loading={loading}>Save</Loader>
+        </Button>
       </div>
     </form>
   )
