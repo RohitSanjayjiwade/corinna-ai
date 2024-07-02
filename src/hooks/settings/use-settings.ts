@@ -1,4 +1,4 @@
-import { onChatBotImageUpdate, onDeleteUserDomain, onUpdateDomain, onUpdatePassword, onUpdateWelcomeMessage } from '@/actions/settings'
+import { onChatBotImageUpdate, onDeleteUserDomain, onUpdateDomain, onUpdatePassword, onUpdateWelcomeMessage, onCreateHelpDeskQuestion, onGetAllHelpDeskQuestions, } from '@/actions/settings'
 import { useToast } from '@/components/ui/use-toast'
 import { ChangePasswordProps, ChangePasswordSchema } from '@/schemas/auth.schema'
 import { DomainSettingsProps, DomainSettingsSchema } from '@/schemas/settings.schema'
@@ -6,8 +6,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { UploadClient } from '@uploadcare/upload-client'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import {
+  HelpDeskQuestionsProps,
+  HelpDeskQuestionsSchema,
+} from '@/schemas/settings.schema'
 
 const upload = new UploadClient({
 	publicKey: process.env.NEXT_PUBLIC_UPLOAD_CARE_PUBLIC_KEY as string,
@@ -130,118 +134,58 @@ export const useSettings = (id: string) => {
 	}
 }
 
-/*
-	*** update the domain name, chatbot image, and welcome message in a single call to the backend,
-	you can combine these updates into a single function. ***
 
-export const useSettings = (id: string) => {
+export const useHelpDesk = (id: string) => {
   const {
-	register,
-	handleSubmit,
-	formState: { errors },
-	reset,
-  } = useForm<DomainSettingsProps>({
-	resolver: zodResolver(DomainSettingsSchema),
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<HelpDeskQuestionsProps>({
+    resolver: zodResolver(HelpDeskQuestionsSchema),
   })
-  const router = useRouter()
   const { toast } = useToast()
+
   const [loading, setLoading] = useState<boolean>(false)
-  const [deleting, setDeleting] = useState<boolean>(false)
-
-  const onUpdateSettings = handleSubmit(async (values) => {
-	setLoading(true)
-    
-	try {
-	  const updates = {
-		domain: values.domain,
-		image: values.image[0] ? await upload.uploadFile(values.image[0]).then(uploaded => uploaded.uuid) : null,
-		welcomeMessage: values.welcomeMessage,
-	  }
-
-	  const response = await onUpdateDomainSettings(id, updates)
-
-	  if (response.status === 200) {
-		toast({
-		  title: 'Success',
-		  description: response.message,
-		})
-	  } else {
-		toast({
-		  title: 'Error',
-		  description: response.message,
-		})
-	  }
-	} catch (error) {
-	  toast({
-		title: 'Error',
-		description: 'An error occurred while updating settings.',
-	  })
-	  console.error(error)
-	} finally {
-	  setLoading(false)
-	  reset()
-	  router.refresh()
-	}
+  const [isQuestions, setIsQuestions] = useState<
+    { id: string; question: string; answer: string }[]
+  >([])
+  const onSubmitQuestion = handleSubmit(async (values) => {
+    setLoading(true)
+    const question = await onCreateHelpDeskQuestion(
+      id,
+      values.question,
+      values.answer
+    )
+    if (question) {
+      setIsQuestions(question.questions!)
+      toast({
+        title: question.status == 200 ? 'Success' : 'Error',
+        description: question.message,
+      })
+      setLoading(false)
+      reset()
+    }
   })
+
+  const onGetQuestions = async () => {
+    setLoading(true)
+    const questions = await onGetAllHelpDeskQuestions(id)
+    if (questions) {
+      setIsQuestions(questions.questions)
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    onGetQuestions()
+  }, [])
 
   return {
-	register,
-	onUpdateSettings,
-	errors,
-	loading,
-	deleting,
+    register,
+    onSubmitQuestion,
+    errors,
+    isQuestions,
+    loading,
   }
 }
-
-export const onUpdateDomainSettings = async (id: string, updates: { domain?: string, image?: string, welcomeMessage?: string }) => {
-  try {
-	// Check if domain with name exists
-	if (updates.domain) {
-	  const domainExists = await client.domain.findFirst({
-		where: {
-		  name: {
-			contains: updates.domain,
-		  },
-		},
-	  })
-
-	  if (domainExists) {
-		return {
-		  status: 400,
-		  message: 'Domain with this name already exists',
-		}
-	  }
-	}
-
-	// Perform the update
-	const updatedData: any = {}
-	if (updates.domain) updatedData.name = updates.domain
-	if (updates.image) updatedData.chatBot = { update: { data: { icon: updates.image } } }
-	if (updates.welcomeMessage) updatedData.chatBot = { ...updatedData.chatBot, update: { data: { welcomeMessage: updates.welcomeMessage } } }
-
-	const domain = await client.domain.update({
-	  where: { id },
-	  data: updatedData,
-	})
-
-	if (domain) {
-	  return {
-		status: 200,
-		message: 'Domain settings updated',
-	  }
-	}
-
-	return {
-	  status: 400,
-	  message: 'Oops something went wrong!',
-	}
-  } catch (error) {
-	console.log(error)
-	return {
-	  status: 500,
-	  message: 'Internal server error',
-	}
-  }
-}
-
-*/
