@@ -6,10 +6,10 @@ export type ConversationSearchProps = {
   domain: string
 }
 
-// export type ChatBotMessageProps = {
-//   content?: string
-//   image?: any
-// }
+export type ChatBotMessageProps = {
+  content?: string
+  image?: any
+}
 
 export const ConversationSearchSchema: ZodType<ConversationSearchProps> =
   z.object({
@@ -17,25 +17,25 @@ export const ConversationSearchSchema: ZodType<ConversationSearchProps> =
     domain: z.string().min(1, { message: 'You must select a domain' }),
   })
 
-// export const ChatBotMessageSchema: ZodType<ChatBotMessageProps> = z
-//   .object({
-//     content: z
-//       .string()
-//       .min(1)
-//       .optional()
-//       .or(z.literal('').transform(() => undefined)),
-//     image: z.any().optional(),
-//   })
-//   .refine((schema) => {
-//     if (schema.image?.length) {
-//       if (
-//         ACCEPTED_FILE_TYPES.includes(schema.image?.[0].type!) &&
-//         schema.image?.[0].size <= MAX_UPLOAD_SIZE
-//       ) {
-//         return true
-//       }
-//     }
-//     if (!schema.image?.length) {
-//       return true
-//     }
-//   })
+export const ChatBotMessageSchema: ZodType<ChatBotMessageProps> = z
+  .object({
+    content: z
+      .string()
+      .min(1)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    image: z.any().optional(),
+  })
+  .refine((schema) => {
+    if (schema.image?.length) {
+      if (
+        ACCEPTED_FILE_TYPES.includes(schema.image?.[0].type!) &&
+        schema.image?.[0].size <= MAX_UPLOAD_SIZE
+      ) {
+        return true
+      }
+    }
+    if (!schema.image?.length) {
+      return true
+    }
+  })
