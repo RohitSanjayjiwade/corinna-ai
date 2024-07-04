@@ -2,7 +2,7 @@
 import { useChatWindow } from '@/hooks/conversation/use-conversation'
 import React from 'react'
 import { Loader } from '../loader'
-// import Bubble from '../chatbot/bubble'
+import Bubble from '../chatbot/bubble'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { PaperclipIcon } from 'lucide-react'
