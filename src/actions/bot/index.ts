@@ -3,6 +3,8 @@
 import { client } from '@/lib/prisma'
 import { extractEmailsFromString } from '@/lib/utils'
 import { onRealTimeChat } from '../conversation'
+import { clerkClient } from '@clerk/nextjs'
+import { onMailer } from '../mailer'
 
 
 export const onStoreConversations = async (
@@ -165,6 +167,25 @@ export const onAiChatBotAssistant = async (
           //   'user',
           //   author
           // )
+
+          
+          if (!checkCustomer.customer[0].chatRoom[0].mailed) {
+            const user = await clerkClient.users.getUser(
+              checkCustomer.User?.clerkId!
+            )
+
+            onMailer(user.emailAddresses[0].emailAddress)
+
+            //update mail status to prevent spamming
+            const mailed = await client.chatRoom.update({
+              where: {
+                id: checkCustomer.customer[0].chatRoom[0].id,
+              },
+              data: {
+                mailed: true,
+              },
+            })
+          }
 
       }
 	}
