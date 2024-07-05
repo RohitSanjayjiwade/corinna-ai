@@ -146,9 +146,8 @@ export const onAiChatBotAssistant = async (
             console.log('new customer made')
             const response = {
               role: 'assistant',
-              content: `Welcome aboard ${
-                customerEmail.split('@')[0]
-              }! I'm glad to connect with you. Is there anything you need help with?`,
+              content: `Welcome aboard ${customerEmail.split('@')[0]
+                }! I'm glad to connect with you. Is there anything you need help with?`,
             }
             return { response }
           }
@@ -159,7 +158,7 @@ export const onAiChatBotAssistant = async (
             message,
             author
           )
-          
+
           //WIP: SETUP Real Time Mode;
           // onRealTimeChat(
           //   checkCustomer.customer[0].chatRoom[0].id,
@@ -168,7 +167,7 @@ export const onAiChatBotAssistant = async (
           //   author
           // )
 
-          
+
           if (!checkCustomer.customer[0].chatRoom[0].mailed) {
             const user = await clerkClient.users.getUser(
               checkCustomer.User?.clerkId!
@@ -185,11 +184,27 @@ export const onAiChatBotAssistant = async (
                 mailed: true,
               },
             })
-          }
 
+            if (mailed) {
+              return {
+                live: true,
+                chatRoom: checkCustomer.customer[0].chatRoom[0].id,
+              }
+            }
+          }
+          return {
+            live: true,
+            chatRoom: checkCustomer.customer[0].chatRoom[0].id,
+          }
+        }
+
+        await onStoreConversations(
+          checkCustomer?.customer[0].chatRoom[0].id!,
+          message,
+          author
+        )
       }
-	}
-  }
+    }
   } catch (error) {
     console.log(error)
   }
