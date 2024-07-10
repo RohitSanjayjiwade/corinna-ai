@@ -1,7 +1,7 @@
 'use server'
 
 import { client } from '@/lib/prisma'
-import { extractEmailsFromString } from '@/lib/utils'
+import { extractEmailsFromString, extractURLfromString } from '@/lib/utils'
 import { onRealTimeChat } from '../conversation'
 import { clerkClient } from '@clerk/nextjs'
 import { onMailer } from '../mailer'
@@ -247,6 +247,128 @@ export const onAiChatBotAssistant = async (
           ],
           model: 'gpt-3.5-turbo',
         })
+
+        if (chatCompletion.choices[0].message.content?.includes('(realtime)')) {
+          const realtime = await client.chatRoom.update({
+            where: {
+              id: checkCustomer?.customer[0].chatRoom[0].id,
+            },
+            data: {
+              live: true,
+            },
+          })
+
+          if (realtime) {
+            const response = {
+              role: 'assistant',
+              content: chatCompletion.choices[0].message.content.replace(
+                '(realtime)',
+                ''
+              ),
+            }
+
+            await onStoreConversations(
+              checkCustomer?.customer[0].chatRoom[0].id!,
+              response.content,
+              'assistant'
+            )
+
+            return { response }
+          }
+        }
+
+        if (chat[chat.length - 1].content.includes('(complete)')) {
+          const firstUnansweredQuestion =
+            await client.customerResponses.findFirst({
+              where: {
+                customerId: checkCustomer?.customer[0].id,
+                answered: null,
+              },
+              select: {
+                id: true,
+              },
+              orderBy: {
+                question: 'asc',
+              },
+            })
+          if (firstUnansweredQuestion) {
+            await client.customerResponses.update({
+              where: {
+                id: firstUnansweredQuestion.id,
+              },
+              data: {
+                answered: message,
+              },
+            })
+          }
+        }
+
+        if (chatCompletion) {
+          const generatedLink = extractURLfromString(
+            chatCompletion.choices[0].message.content as string
+          )
+
+          if (generatedLink) {
+            const link = generatedLink[0]
+            const response = {
+              role: 'assistant',
+              content: `Great! you can follow the link to proceed`,
+              link: link.slice(0, -1),
+            }
+
+            await onStoreConversations(
+              checkCustomer?.customer[0].chatRoom[0].id!,
+              `${response.content} ${response.link}`,
+              'assistant'
+            )
+
+            return { response }
+          }
+
+          const response = {
+            role: 'assistant',
+            content: chatCompletion.choices[0].message.content,
+          }
+
+          await onStoreConversations(
+            checkCustomer?.customer[0].chatRoom[0].id!,
+            `${response.content}`,
+            'assistant'
+          )
+
+          return { response }
+        }
+
+      }
+      console.log('No customer')
+      const chatCompletion = await openai.chat.completions.create({
+        messages: [
+          {
+            role: 'assistant',
+            content: `
+            You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
+            Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
+
+            Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
+
+          `,
+          },
+          ...chat,
+          {
+            role: 'user',
+            content: message,
+          },
+        ],
+        model: 'gpt-3.5-turbo',
+      })
+
+      if (chatCompletion) {
+        const response = {
+          role: 'assistant',
+          content: chatCompletion.choices[0].message.content,
+        }
+
+        return { response }
       }
     }
   } catch (error) {
