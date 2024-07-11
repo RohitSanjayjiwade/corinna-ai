@@ -97,7 +97,7 @@ export const BotWindow = forwardRef<HTMLDivElement, Props>(
           </div>
           <div className="relative w-16 h-16">
             <Image
-              src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
+              src="https://ucarecdn.com/637b78f6-ef52-439b-8df5-ef8829752113/propuser.png"
               fill
               alt="users"
               objectFit="contain"
@@ -125,7 +125,7 @@ export const BotWindow = forwardRef<HTMLDivElement, Props>(
                     message={chat}
                   />
                 ))}
-                {/* {onResponding && <Responding />} */}
+                 {onResponding && <Responding />} 
               </div>
               <form
                 onSubmit={onChat}
