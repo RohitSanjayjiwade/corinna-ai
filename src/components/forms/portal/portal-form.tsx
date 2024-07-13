@@ -56,12 +56,18 @@ const PortalForm = ({
     loading,
   } = usePortal(customerId, domainid, email)
 
+  useEffect(() => {
+    if (questions.every((question) => question.answered)) {
+      onNext()
+    }
+  }, [])
+
   return (
     <form
       className="h-full flex flex-col gap-10 justify-center"
       onSubmit={onBookAppointment}
     >
-      {/* <PortalSteps
+      <PortalSteps
         loading={loading}
         slot={selectedSlot}
         bookings={bookings}
@@ -78,7 +84,7 @@ const PortalForm = ({
         onBack={onPrev}
         amount={amount}
         stripeId={stripeId}
-      /> */}
+      />
       {(step == 1 || step == 2) && (
         <div className="w-full flex justify-center">
           <div className="w-[400px] grid grid-cols-2 gap-3">

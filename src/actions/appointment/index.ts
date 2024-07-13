@@ -80,3 +80,35 @@ export const onBookNewAppointment = async (
     console.log(error)
   }
 }
+
+
+export const saveAnswers = async (
+  questions: [question: string],
+  customerId: string
+) => {
+  try {
+    for (const question in questions) {
+      await client.customer.update({
+        where: { id: customerId },
+        data: {
+          questions: {
+            update: {
+              where: {
+                id: question,
+              },
+              data: {
+                answered: questions[question],
+              },
+            },
+          },
+        },
+      })
+    }
+    return {
+      status: 200,
+      messege: 'Updated Responses',
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}

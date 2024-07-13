@@ -1,6 +1,7 @@
 import {
   onBookNewAppointment,
   onDomainCustomerResponses,
+  saveAnswers,
 } from '@/actions/appointment'
 import { useToast } from '@/components/ui/use-toast'
 import { useEffect, useState } from 'react'
@@ -32,25 +33,34 @@ export const usePortal = (
   const onBookAppointment = handleSubmit(async (values) => {
     try {
       setLoading(true)
+      const questions = Object.keys(values)
+        .filter((key) => key.startsWith('question'))
+        .reduce((obj: any, key) => {
+          obj[key.split('question-')[1]] = values[key]
+          return obj
+        }, {})
 
-      const booked = await onBookNewAppointment(
-        domainId,
-        customerId,
-        values.slot,
-        values.date,
-        email
-      )
-      if (booked && booked.status == 200) {
-        toast({
-          title: 'Success',
-          description: booked.message,
-        })
-        setStep(3)
+      const savedAnswers = await saveAnswers(questions, customerId)
 
+      if (savedAnswers) {
+        const booked = await onBookNewAppointment(
+          domainId,
+          customerId,
+          values.slot,
+          values.date,
+          email
+        )
+        if (booked && booked.status == 200) {
+          toast({
+            title: 'Success',
+            description: booked.message,
+          })
+          setStep(3)
+        }
 
         setLoading(false)
       }
-    } catch (error) { }
+    } catch (error) {}
   })
 
   const onSelectedTimeSlot = (slot: string) => setSelectedSlot(slot)
