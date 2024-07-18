@@ -82,18 +82,17 @@ const PortalSteps = ({
     )
   }
 
-//WIP: Setup Stripe
-  // if (step == 2 && type == 'Payment') {
-  //   return (
-  //     <PaymentCheckout
-  //       products={products}
-  //       stripeId={stripeId}
-  //       onBack={onBack}
-  //       onNext={onNext}
-  //       amount={amount}
-  //     />
-  //   )
-  // }
+  if (step == 2 && type == 'Payment') {
+    return (
+      <PaymentCheckout
+        products={products}
+        stripeId={stripeId}
+        onBack={onBack}
+        onNext={onNext}
+        amount={amount}
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col items-center gap-3">
