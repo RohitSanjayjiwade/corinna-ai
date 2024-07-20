@@ -10,7 +10,7 @@ export const pricingCards = [
     priceId: '',
   },
   {
-    title: 'Unlimited',
+    title: 'ULTIMATE',
     description: 'The ultimate agency kit',
     price: '$97',
     duration: 'month',
@@ -20,7 +20,7 @@ export const pricingCards = [
     priceId: 'price_1OYxkqFj9oKEERu1KfJGWxgN',
   },
   {
-    title: 'Plus',
+    title: 'PRO',
     description: 'For serious agency owners',
     price: '$67',
     duration: 'month',
