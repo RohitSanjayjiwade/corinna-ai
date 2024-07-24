@@ -164,13 +164,12 @@ export const onAiChatBotAssistant = async (
             author
           )
 
-          //WIP: SETUP Real Time Mode;
-          // onRealTimeChat(
-          //   checkCustomer.customer[0].chatRoom[0].id,
-          //   message,
-          //   'user',
-          //   author
-          // )
+          onRealTimeChat(
+            checkCustomer.customer[0].chatRoom[0].id,
+            message,
+            'user',
+            author
+          )
 
 
           if (!checkCustomer.customer[0].chatRoom[0].mailed) {
